@@ -1,8 +1,5 @@
 """
 4.7 多层网络上的级联
-
-正例：阈值 φ 小 → 一个小种子就引爆全局级联。
-反例：阈值 φ 大 → 级联被抑制，停在种子附近。
 """
 
 import random
@@ -14,42 +11,36 @@ plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
 
-def threshold_cascade(Gs, phi, seed_frac=0.05, max_iter=200):
-    """节点在每一层都有 >= phi 比例邻居已激活时被激活"""
+def watts_cascade(Gs, seed_frac, phi, max_iter=100):
+    """任意一层中激活邻居比例 >= phi，节点就激活"""
     N = Gs[0].number_of_nodes()
-    active = set(random.sample(range(N), int(seed_frac * N)))
-    history = [len(active) / N]
+    active = {i for i in range(N) if random.random() < seed_frac}
     for _ in range(max_iter):
         new = set(active)
         for i in range(N):
             if i in active:
                 continue
-            if all(
-                len(set(G.neighbors(i)) & active) / max(len(set(G.neighbors(i))), 1)
-                >= phi
-                for G in Gs
-            ):
-                new.add(i)
+            for G in Gs:
+                nb = list(G.neighbors(i))
+                if nb and sum(1 for j in nb if j in active) / len(nb) >= phi:
+                    new.add(i)
+                    break
         if new == active:
             break
         active = new
-        history.append(len(active) / N)
-    return history
+    return len(active) / N
 
 
-N, c = 200, 6.0
-Gs = [er_layer(N, c) for _ in range(2)]
+random.seed(0)
+N, c, n_avg = 300, 4.0, 10
+G1, G2 = er_layer(N, c), er_layer(N, c)
+S1 = sum(watts_cascade([G1], 0.01, 0.2) for _ in range(n_avg)) / n_avg
+S2 = sum(watts_cascade([G1, G2], 0.01, 0.2) for _ in range(n_avg)) / n_avg
 
-plt.figure(figsize=(7, 4))
-for phi in [0.15, 0.35, 0.55]:
-    h = threshold_cascade(Gs, phi)
-    plt.plot(range(len(h)), h, "o-", label=f"phi={phi}")
-
-plt.xlabel("迭代步")
-plt.ylabel("激活节点比例")
-plt.title("4.7 多层阈值级联")
-plt.legend()
-plt.grid(alpha=0.3)
+plt.figure(figsize=(4, 3))
+plt.bar(["单层", "多层"], [S1, S2], color=["C0", "C3"])
+plt.ylabel("最终激活比例")
+plt.title("4.7 Watts 阈值级联")
+plt.grid(axis="y", alpha=0.3)
 plt.tight_layout()
-plt.savefig("4_7_cascade.png", dpi=120)
 plt.show()
