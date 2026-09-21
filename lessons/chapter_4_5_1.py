@@ -10,8 +10,8 @@ overlap ∈ [0, 1]，越大两层共享边越多：
 import random
 import networkx as nx
 from matplotlib import pyplot as plt
-from giant import er_layer
-from mcgc import mcgc_simple
+from lessons.giant import er_layer
+from lessons.mcgc import mcgc_simple
 
 random.seed(0)
 plt.rcParams["font.sans-serif"] = ["SimHei"]

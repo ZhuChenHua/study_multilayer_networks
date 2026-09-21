@@ -14,7 +14,7 @@ k‑core = 反复删掉度数小于 k 的节点后剩下的核心。
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
-from giant import er_layer
+from lessons.giant import er_layer
 
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False

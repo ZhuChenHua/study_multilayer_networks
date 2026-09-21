@@ -10,7 +10,7 @@
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
-from giant import er_layer, giant
+from lessons.giant import er_layer, giant
 
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False

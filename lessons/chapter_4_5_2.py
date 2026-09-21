@@ -12,7 +12,7 @@
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
-from mcgc import mcgc_simple
+from lessons.mcgc import mcgc_simple
 
 plt.rcParams["font.sans-serif"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False

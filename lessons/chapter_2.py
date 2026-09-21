@@ -1,5 +1,5 @@
 import torch
-from chapter_0 import er_layer
+from lessons.chapter_0 import er_layer
 
 torch.manual_seed(0)
 

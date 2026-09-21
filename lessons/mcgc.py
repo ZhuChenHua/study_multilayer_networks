@@ -15,7 +15,7 @@ MCGC = Mutually Connected Giant Component（互连巨分量）
 import random
 import networkx as nx
 from matplotlib import pyplot as plt
-from giant import giant
+from lessons.giant import giant
 
 
 def mcgc_simple(Gs, p, max_iter=200):
@@ -47,7 +47,7 @@ def mcgc_simple(Gs, p, max_iter=200):
 
 
 if __name__ == "__main__":
-    from giant import er_layer
+    from lessons.giant import er_layer
 
     N, c = 100, 4.0
     Gs = [er_layer(N, c) for _ in range(2)]
