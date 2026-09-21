@@ -13,6 +13,8 @@ MCGC = Mutually Connected Giant Component（互连巨分量）
 """
 
 import random
+import networkx as nx
+from matplotlib import pyplot as plt
 from giant import giant
 
 
@@ -49,5 +51,9 @@ if __name__ == "__main__":
 
     N, c = 100, 4.0
     Gs = [er_layer(N, c) for _ in range(2)]
+    for G in Gs:
+        nx.draw(G, with_labels=True)
+        plt.show()
+    print("MCGC 大小占节点总数的比例 = ", mcgc_simple(Gs, 0.5))
     for p in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         print(f"p = {p}, MCGC 大小占节点总数的比例 = {mcgc_simple(Gs, p):.3f}")
