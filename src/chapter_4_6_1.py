@@ -32,7 +32,16 @@ def projected(Gs):
 
 
 def compute_single(G, p_list, n_avg):
-    """单层渗流：只在一张图上做节点随机保留"""
+    """
+    单图节点渗流：对一张图执行节点随机保留仿真，计算巨分量占比S
+    Args:
+        G: networkx 图
+        p_list: 保留比例列表
+        n_avg: 每个 p 做多少次实验取平均
+    Returns:
+        S_list: 保留比例列表对应的 S 值列表
+    """
+
     N = G.number_of_nodes()
     S_list = []
     for p in p_list:
