@@ -7,9 +7,10 @@
 \usepackage{booktabs}
 \usepackage{url}
 
-\setcitestyle{numbers}   % 新增：强制数字引用，解决 natbib 报错
+\setcitestyle{numbers}   % 强制数字引用，解决 natbib 报错
+\bibpunct{[}{]}{,}{n}{}{,}   % 数字引用用方括号（acl.sty 把 \cite 定义为 \citep）
 
-\title{Giant Components under Random Failures: A Mini Review from Single-Layer to Multilayer Networks}
+\title{Giant Components under Random Failures: A Short Study from Single-Layer to Multilayer Networks}
 
 \author{Chenhua Zhu \\
   QHNU \\
@@ -22,15 +23,22 @@
 \maketitle
 
 \begin{abstract}
-  Understanding how networks remain connected under random failures is a central problem in network science. This mini review introduces the basic concepts of connected components, the largest connected component, and the giant component under random attacks. We first review the generating-function formalism for single-layer networks and derive the classic Erd\H{o}s--R\'enyi result. We then move to multilayer interdependent networks, where the mutually connected giant component (MCGC) emerges through a discontinuous phase transition. A small numerical experiment compares single-layer and two-layer ER networks, and the complete simulation code is available online.
+  Understanding how networks remain connected under random failures is a central problem in network science. This short paper studies the basic concepts of connected components, the largest connected component, and the giant component under random attacks. We first review the generating-function formalism for single-layer networks and derive the classic ER (Erd\H{o}s--R\'enyi) result. We then move to multilayer interdependent networks, where the mutually connected giant component (MCGC) emerges through a discontinuous phase transition. Two small numerical experiments compare single-layer and multilayer ER networks, and the complete simulation code is available online.
 \end{abstract}
 
 \section{Introduction}
 Many real-world systems---power grids, the Internet, social platforms, and transportation networks---can be modeled as networks. A fundamental question is how robust these networks are when a fraction of nodes is randomly removed or fails. This process is often studied through percolation theory, where one asks whether a giant connected component still exists after random damage.
 
-In single-layer networks, the answer is relatively well understood. For random graphs and configuration models, generating functions give the size of the giant component and the percolation threshold. In multilayer networks, however, the picture changes dramatically. When nodes in different layers depend on each other, a failure in one layer can trigger cascading failures in other layers, leading to a discontinuous collapse of the mutually connected giant component.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/model.pdf}
+  \caption{The two models studied here, for $N=45$, $c=4$ and $q=0.25$. (a) Single-layer ER network: after random removal only the largest connected component $C_{\max}$ (blue) matters. (b) Two interdependent ER layers: dotted lines connect replicas, and a node is in the mutually connected giant component (red) only if it lies in the giant component of both layers. Grey dots: other survivors; crosses: removed nodes.}
+  \label{fig:model}
+\end{figure}
 
-This mini review is intended for students who are new to network percolation. We focus on the core definitions, the main formulas, and one small numerical experiment. The full simulation code is available at \url{https://github.com/ZhuChenHua/study-multilayer-networks}.
+In single-layer networks, the answer is relatively well understood. For random graphs and configuration models, generating functions give the size of the giant component and the percolation threshold~\cite{newman2010}. In multilayer networks~\cite{boccaletti2014}, however, the picture changes dramatically. When nodes in different layers depend on each other, a failure in one layer can trigger cascading failures in other layers, leading to a discontinuous collapse of the mutually connected giant component. Figure~\ref{fig:model} contrasts the two situations: in the single-layer case a node survives as soon as it stays connected, while in the interdependent case its replica must survive as well, and failures therefore propagate from one layer to the other until a mutually connected set remains.
+
+This paper reviews percolation on networks from first principles: the core definitions, the main formulas, and two small numerical experiments. The full simulation code is available at \url{https://github.com/ZhuChenHua/study-multilayer-networks}.
 
 \section{Definitions and Random Failure Model}
 Let $G=(V,E)$ be an undirected graph with $N=|V|$ nodes. A \emph{connected component} is a maximal subset $C\subseteq V$ such that the induced subgraph $G[C]$ is connected. The \emph{largest connected component} is
@@ -60,10 +68,10 @@ and the giant component fraction is
 \begin{equation}
   S = p[1-G_0(u)].
 \end{equation}
-The percolation threshold is determined by the first non-trivial solution of these equations.
+The percolation threshold is determined by the first non-trivial solution of these equations~\cite{newman2010}.
 
-\subsection{Erd\H{o}s--R\'enyi networks}
-For an Erd\H{o}s--R\'enyi (ER) network with average degree $c$, we have
+\subsection{ER networks}
+For an ER network~\cite{erdos1960} with average degree $c$, we have
 \begin{equation}
   G_0(x)=G_1(x)=e^{-c(1-x)}.
 \end{equation}
@@ -78,7 +86,7 @@ The critical point is
 For $q<q_c$, a giant component exists; for $q>q_c$, it disappears.
 
 \section{Multilayer Interdependent Networks}
-In a multiplex or interdependent network, each node has a replica in every layer. A node is active only if it belongs to the giant component in all layers. The largest set of such nodes is called the \emph{mutually connected giant component} (MCGC).
+In a multiplex or interdependent network~\cite{buldyrev2010}, each node has a replica in every layer. A node is active only if it belongs to the giant component in all layers. The largest set of such nodes is called the \emph{mutually connected giant component} (MCGC).
 
 Consider $M$ layers, each an ER network with average degree $c$. After random removal with probability $q$, the MCGC fraction $S$ satisfies
 \begin{equation}
@@ -90,53 +98,63 @@ For $M=1$, this reduces to the single-layer ER result. For $M\ge 2$, the transit
   \qquad
   g_y'(x)=0,
 \end{equation}
-where $y=cp=c(1-q)$. For $M=2$, one obtains $y_c\approx 2.45541$, so
+where $y=cp=c(1-q)$. Writing the first equation as $y=x/(1-e^{-x})^M$, the critical point is simply the maximum of this function,
+\begin{equation}
+  y_c = \max_{x>0} \frac{x}{(1-e^{-x})^M},
+\end{equation}
+whose maximizer satisfies $e^{x_c}=1+Mx_c$. For $M=1$ this gives $y_c=1$, i.e.\ $q_c=1-1/c$; for $M=2$ one obtains $x_c\approx 1.25643$ and $y_c\approx 2.45541$, so
 \begin{equation}
   q_c = 1-\frac{y_c}{c}.
 \end{equation}
-This shows that interdependencies make the network more fragile: the transition is abrupt, and cascading failures can destroy the entire system.
+This shows that interdependencies make the network more fragile: the transition is abrupt, and cascading failures can destroy the entire system. Since $y_c$ also grows with $M$, a system with more layers collapses at a smaller $q$.
 
 \section{Numerical Experiments}
-We perform a small simulation to illustrate the theory. We generate ER networks with $N=10{,}000$ nodes and average degree $c=4$. For the multilayer case, we generate two independent ER layers and couple each node with its replica in the other layer. We remove a fraction $q$ of nodes randomly, compute the largest connected component for the single-layer case and the MCGC for the two-layer case, and average over 20 independent runs.
+We perform two small simulations. In the first one we generate ER networks with $N=10{,}000$ nodes and average degree $c=4$. For the multilayer case, we generate two independent ER layers and couple each node with its replica in the other layer. We remove a fraction $q$ of nodes randomly, compute the largest connected component for the single-layer case and the MCGC for the two-layer case, and average over 20 independent runs.
 
-Figure~\ref{fig:result} shows the results. The single-layer network exhibits a continuous transition near $q_c=0.75$, while the two-layer interdependent network collapses discontinuously at a smaller value of $q$. The simulation points agree well with the theoretical curves obtained from Eqs.~(6) and (9).
+Figure~\ref{fig:result} shows the results. The single-layer network exhibits a continuous transition near $q_c=0.75$, while the two-layer interdependent network collapses discontinuously at the smaller value $q_c=0.386$. The simulation points agree well with the theoretical curves obtained from the equations above.
 
 \begin{figure}[t]
   \centering
-  % \includegraphics[width=\columnwidth]{figures/giant_component.pdf}
-  \caption{Largest connected component ratio $R(q)$ under random failures. Markers: simulation; lines: theory. Single-layer ER network (blue) and two-layer interdependent ER network (red). The multilayer transition is discontinuous and occurs earlier.}
+  \includegraphics[width=\columnwidth]{figures/giant_component.pdf}
+  \caption{Largest connected component ratio $R(q)=|C_{\max}|/N$ under random failures, with $N=10{,}000$ and $c=4$. Markers: simulation; lines: theory. Single-layer ER network (blue) and two-layer interdependent ER network (red). The multilayer transition is discontinuous and occurs earlier.}
   \label{fig:result}
 \end{figure}
 
+The second simulation asks how the number of layers changes the transition. We generate $M=1,2,3,4$ interdependent ER layers with $N=4{,}000$ nodes and $c=6$, and average the MCGC fraction over 8 independent runs. Figure~\ref{fig:layers} shows that every curve with $M\ge 2$ jumps from zero at its own threshold, and that the threshold moves to smaller $q$ as $M$ grows ($q_c=0.833$, $0.591$, $0.485$ and $0.415$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/phase_transition.pdf}
+  \caption{Effect of the number of layers, with $N=4{,}000$ and $c=6$. Markers: simulation; lines: theory; dashed lines: the thresholds $q_c=1-y_c/c$. The MCGC of $M\ge 2$ interdependent layers jumps from zero, at smaller $q$ as $M$ grows.}
+  \label{fig:layers}
+\end{figure}
+
 \section{Conclusion and Code}
-This mini review summarized the basics of random failures and giant components in single-layer and multilayer networks. The single-layer case is described by generating functions and the ER formula $S=(1-q)(1-e^{-cS})$. In multilayer interdependent networks, the MCGC follows $S=(1-q)(1-e^{-cS})^M$, and the transition becomes discontinuous for $M\ge 2$. A small numerical experiment confirmed these predictions.
+This paper studied the basics of random failures and giant components in single-layer and multilayer networks. The single-layer case is described by generating functions and the ER formula $S=(1-q)(1-e^{-cS})$. In multilayer interdependent networks, the MCGC follows $S=(1-q)(1-e^{-cS})^M$, and the transition becomes discontinuous for $M\ge 2$, with $y_c$ growing with $M$. The numerical experiments confirmed these predictions.
 
 The complete simulation code, including network generation, random removal, BFS-based component detection, and plotting scripts, is available at
 \begin{center}
   \url{https://github.com/ZhuChenHua/study-multilayer-networks}.
 \end{center}
-Students are encouraged to modify the parameters $N$, $c$, $q$, and $M$ to explore different regimes.
+The model and the theory curves are implemented in \texttt{paper\_1/code/percolation.py}, and all three figures are produced by \texttt{paper\_1/code/figures.py}.
+
+Both experiments point to the same open question. What happens when the layers are no longer identical, or when only a fraction $\alpha$ of the nodes depend on their replicas? Partial dependence is known to replace the abrupt collapse by a continuous transition once the coupling exceeds a critical strength~\cite{parshani2010}, and the scripts above allow both regimes to be reached by changing a single parameter.
 
 \begin{thebibliography}{99}
+  \bibitem{newman2010}
+  M. E. J. Newman.
+  \newblock \emph{Networks: An Introduction}.
+  \newblock Oxford University Press, 2010.
+
+  \bibitem{boccaletti2014}
+  S. Boccaletti, G. Bianconi, R. Criado, C. I. del Genio, J. G\'omez-Garde\~nes, M. Romance, I. Sendi\~na-Nadal, Z. Wang, and M. Zanin.
+  \newblock The structure and dynamics of multilayer networks.
+  \newblock \emph{Physics Reports}, 544(1):1--122, 2014.
+
   \bibitem{erdos1960}
   P. Erd\H{o}s and A. R\'enyi.
   \newblock On the evolution of random graphs.
   \newblock \emph{Publications of the Mathematical Institute of the Hungarian Academy of Sciences}, 5:17--61, 1960.
-
-  \bibitem{molloy1995}
-  M. Molloy and B. Reed.
-  \newblock A critical point for random graphs with a given degree sequence.
-  \newblock \emph{Random Structures \& Algorithms}, 6(2-3):161--180, 1995.
-
-  \bibitem{callaway2000}
-  D. S. Callaway, M. E. J. Newman, S. H. Strogatz, and D. J. Watts.
-  \newblock Network robustness and fragility: Percolation on random graphs.
-  \newblock \emph{Physical Review Letters}, 85(25):5468--5471, 2000.
-
-  \bibitem{cohen2000}
-  R. Cohen, K. Erez, D. ben-Avraham, and S. Havlin.
-  \newblock Resilience of the Internet to random breakdowns.
-  \newblock \emph{Physical Review Letters}, 85(21):4626--4628, 2000.
 
   \bibitem{buldyrev2010}
   S. V. Buldyrev, R. Parshani, G. Paul, H. E. Stanley, and S. Havlin.
@@ -147,26 +165,6 @@ Students are encouraged to modify the parameters $N$, $c$, $q$, and $M$ to explo
   R. Parshani, S. V. Buldyrev, and S. Havlin.
   \newblock Interdependent networks: Reducing the coupling strength leads to a change from a first to second order percolation transition.
   \newblock \emph{Physical Review Letters}, 105(4):048701, 2010.
-
-  \bibitem{gao2011}
-  J. Gao, S. V. Buldyrev, S. Havlin, and H. E. Stanley.
-  \newblock Robustness of a network of networks.
-  \newblock \emph{Physical Review Letters}, 107(19):195701, 2011.
-
-  \bibitem{boccaletti2014}
-  S. Boccaletti, G. Bianconi, R. Criado, C. I. del Genio, J. G\'omez-Garde\~nes, M. Romance, I. Sendi\~na-Nadal, Z. Wang, and M. Zanin.
-  \newblock The structure and dynamics of multilayer networks.
-  \newblock \emph{Physics Reports}, 544(1):1--122, 2014.
-
-  \bibitem{kivela2014}
-  M. Kivel\"a, A. Arenas, M. Barthelemy, J. P. Gleeson, Y. Moreno, and M. A. Porter.
-  \newblock Multilayer networks.
-  \newblock \emph{Journal of Complex Networks}, 2(3):203--271, 2014.
-
-  \bibitem{newman2010}
-  M. E. J. Newman.
-  \newblock \emph{Networks: An Introduction}.
-  \newblock Oxford University Press, 2010.
 \end{thebibliography}
 
 \end{document}
